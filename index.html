@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Szczurołap — Tunele pod Ubersreikiem | Gra RPG</title>
+<meta name="description" content="Mroczna gra RPG inspirowana dark fantasy. Zejdź do tuneli pod Ubersreikiem i zmierz się z hordami ratoludzi.">
+<meta property="og:title" content="Szczurołap — Tunele pod Ubersreikiem">
+<meta property="og:description" content="Mroczna gra RPG w przeglądarce. Wybierz bohatera, zejdź do tuneli, pokonaj bossa.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐀</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0806;--bg-panel:#181210;--gold:#c9a959;--gold-dim:#5a4a30;
+  --text:#d4c5a9;--muted:#6a5e50;--border:#3a2e20;
+}
+html,body{height:100%;font-family:'Crimson Text',Georgia,serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at 50% 30%,rgba(201,169,89,.05) 0%,transparent 55%);
+  pointer-events:none;z-index:1}
+body::after{content:'';position:fixed;inset:0;opacity:.035;
+  background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:1}
+
+.page{position:relative;z-index:2;display:flex;flex-direction:column;min-height:100vh}
+
+header{text-align:center;padding:28px 16px 20px;border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg,rgba(24,18,12,.9) 0%,rgba(10,8,6,.95) 100%)}
+header h1{font-family:'Cinzel',serif;color:var(--gold);font-size:clamp(1.4rem,4vw,2.4rem);
+  letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px;
+  text-shadow:0 0 30px rgba(201,169,89,.2),0 2px 4px rgba(0,0,0,.6)}
+header .subtitle{color:var(--muted);font-size:clamp(.85rem,2vw,1.05rem);letter-spacing:.04em;
+  font-family:'Cinzel',serif}
+.header-deco{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:10px}
+.header-deco .line{flex:1;max-width:120px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent)}
+.header-deco .skull{color:var(--gold-dim);font-size:1rem}
+
+.game-wrapper{flex:1;display:flex;flex-direction:column;padding:12px;max-width:1200px;width:100%;margin:0 auto}
+.toolbar{display:flex;align-items:center;justify-content:space-between;padding:8px 0;gap:12px;flex-wrap:wrap}
+.toolbar-left{display:flex;align-items:center;gap:8px}
+.toolbar .status{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted)}
+.toolbar .status .dot{display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:#5ea85e;margin-right:4px;vertical-align:middle;animation:blink 2s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;
+  background:var(--bg-panel);border:1px solid var(--gold-dim);color:var(--gold);
+  font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
+  cursor:pointer;border-radius:3px;transition:all .2s;user-select:none}
+.btn:hover{background:#2a2016;border-color:var(--gold);box-shadow:0 0 12px rgba(201,169,89,.15)}
+.btn svg{width:14px;height:14px;fill:currentColor}
+
+.iframe-wrap{flex:1;border:1px solid var(--border);border-radius:6px;overflow:hidden;
+  background:#0e0b08;position:relative;min-height:500px;
+  box-shadow:0 4px 30px rgba(0,0,0,.5),inset 0 0 40px rgba(0,0,0,.3)}
+.iframe-wrap iframe{width:100%;height:100%;border:none;display:block;position:absolute;inset:0}
+.iframe-wrap.fullscreen{position:fixed;inset:0;z-index:1000;border-radius:0;border:none;min-height:unset}
+
+footer{text-align:center;padding:16px;border-top:1px solid var(--border);background:var(--bg-panel)}
+footer p{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);line-height:1.6}
+
+.embed-panel{display:none;background:var(--bg-panel);border:1px solid var(--border);border-radius:6px;
+  padding:16px;margin-top:12px;animation:fadeIn .3s ease}
+.embed-panel.open{display:block}
+.embed-panel h3{font-family:'Cinzel',serif;color:var(--gold);font-size:.85rem;margin-bottom:10px;
+  text-transform:uppercase;letter-spacing:.05em}
+.embed-panel p{font-size:.85rem;color:var(--muted);margin-bottom:10px;line-height:1.5}
+.embed-panel code{background:var(--bg);padding:1px 5px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--gold)}
+.code-block{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:12px;
+  font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text);
+  overflow-x:auto;white-space:pre;line-height:1.5;margin-bottom:10px}
+.methods{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:14px}
+.method-card{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:14px}
+.method-card h4{color:var(--gold);font-family:'Cinzel',serif;font-size:.75rem;margin-bottom:6px;
+  text-transform:uppercase;letter-spacing:.04em}
+.method-card p{font-size:.8rem;color:var(--muted);line-height:1.5}
+.method-card .step{color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.7rem;
+  background:var(--bg-panel);padding:4px 8px;border-radius:3px;margin-top:6px;display:block}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(max-width:600px){
+  header{padding:20px 12px 14px}
+  .game-wrapper{padding:8px}
+  .btn{padding:6px 10px;font-size:.65rem}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>🐀 Szczurołap</h1>
+    <p class="subtitle">Tunele pod Ubersreikiem</p>
+    <div class="header-deco">
+      <div class="line"></div>
+      <span class="skull">☠</span>
+      <div class="line"></div>
+    </div>
+  </header>
+
+  <div class="game-wrapper">
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <span class="status"><span class="dot"></span>Gra aktywna</span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" onclick="toggleFullscreen()" id="fs-btn">
+          <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+          Pełny ekran
+        </button>
+        <button class="btn" onclick="toggleEmbed()">
+          <svg viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+          Osadź na stronie
+        </button>
+      </div>
+    </div>
+
+    <div class="iframe-wrap" id="game-frame-wrap">
+      <iframe src="game.html" id="game-frame" title="Szczurołap — Gra RPG" allow="fullscreen" loading="eager"></iframe>
+    </div>
+
+    <div class="embed-panel" id="embed-panel">
+      <h3>⚙ Jak osadzić grę na swojej stronie</h3>
+      <p>Potrzebujesz tylko jednego pliku: <code>game.html</code>. Wgraj go na swój serwer i użyj jednej z poniższych metod.</p>
+
+      <h3 style="margin-top:16px">Kod do osadzenia (iframe)</h3>
+      <div class="code-block" id="embed-code">&lt;iframe
+  src="game.html"
+  width="100%"
+  height="700"
+  style="border:none; border-radius:8px; max-width:1100px;"
+  title="Szczurołap — Gra RPG"
+  allow="fullscreen"&gt;
+&lt;/iframe&gt;</div>
+      <button class="btn" onclick="copyEmbed()" id="copy-btn">📋 Kopiuj kod iframe</button>
+
+      <div class="methods">
+        <div class="method-card">
+          <h4>Hosting statyczny</h4>
+          <p>Wrzuć <strong>game.html</strong> na GitHub Pages, Netlify, Vercel lub własny serwer. Ustaw src iframe na URL pliku.</p>
+          <span class="step">📁 game.html → twoja-domena.pl/game.html</span>
+        </div>
+        <div class="method-card">
+          <h4>WordPress / CMS</h4>
+          <p>Dodaj blok <strong>Custom HTML</strong> w edytorze i wklej kod iframe. Plik game.html wgraj przez FTP do katalogu motywu.</p>
+          <span class="step">Edytor → Blok HTML → wklej iframe</span>
+        </div>
+        <div class="method-card">
+          <h4>Bezpośrednio w przeglądarce</h4>
+          <p>Plik <strong>game.html</strong> jest w 100% samodzielny — otwórz go podwójnym kliknięciem. Nie potrzebuje serwera.</p>
+          <span class="step">Przeglądarka → Otwórz plik → game.html</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Szczurołap — Tunele pod Ubersreikiem · Mroczna gra RPG w przeglądarce<br>
+    Jeden plik HTML · Zero zależności · Działa offline</p>
+  </footer>
+</div>
+
+<script>
+function toggleFullscreen(){
+  const w=document.getElementById('game-frame-wrap');
+  const b=document.getElementById('fs-btn');
+  w.classList.toggle('fullscreen');
+  const isFull=w.classList.contains('fullscreen');
+  b.innerHTML=isFull
+    ?'<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg> Zamknij'
+    :'<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg> Pełny ekran';
+  if(isFull) document.addEventListener('keydown',escH);
+  else document.removeEventListener('keydown',escH);
+}
+function escH(e){if(e.key==='Escape')toggleFullscreen()}
+function toggleEmbed(){document.getElementById('embed-panel').classList.toggle('open')}
+function copyEmbed(){
+  const code=`<iframe src="game.html" width="100%" height="700" style="border:none;border-radius:8px;max-width:1100px" title="Szczurołap — Gra RPG" allow="fullscreen"></iframe>`;
+  navigator.clipboard.writeText(code).then(()=>{
+    document.getElementById('copy-btn').textContent='✓ Skopiowano!';
+    setTimeout(()=>document.getElementById('copy-btn').textContent='📋 Kopiuj kod iframe',2000);
+  }).catch(()=>{
+    const t=document.createElement('textarea');t.value=code;document.body.appendChild(t);t.select();
+    document.execCommand('copy');document.body.removeChild(t);
+    document.getElementById('copy-btn').textContent='✓ Skopiowano!';
+    setTimeout(()=>document.getElementById('copy-btn').textContent='📋 Kopiuj kod iframe',2000);
+  });
+}
+</script>
+</body>
+</html>
