@@ -82,7 +82,7 @@ h1,h2,h3,.title-font{font-family:'Cinzel',serif;color:var(--gold);letter-spacing
 .skill-card .name,.weapon-card .name{color:var(--gold);font-weight:600;margin-bottom:4px;font-size:.9rem}
 .skill-card .effect,.weapon-card .effect{color:var(--muted);font-size:.8rem;line-height:1.4}
 #game-screen{padding:8px}
-.game-header{text-align:center;padding:8px;margin-bottom:8px;border-bottom:1px solid var(--border)}
+.game-header{text-align:center;padding:8px 8px 6px;margin-bottom:8px;border-bottom:1px solid var(--border)}
 .game-header h2{font-size:1rem}
 .game-layout{display:flex;gap:12px}
 .game-main{flex:1;min-width:0}
@@ -173,7 +173,10 @@ h1,h2,h3,.title-font{font-family:'Cinzel',serif;color:var(--gold);letter-spacing
   <div id="select-screen" class="screen"></div>
   <div id="custom-screen" class="screen"></div>
   <div id="game-screen" class="screen">
-    <div class="game-header"><h2 id="level-title">SZCZUROŁAP — Poziom 1</h2></div>
+    <div class="game-header">
+      <h2 id="level-title">SZCZUROŁAP — Poziom 1</h2>
+      <div id="hero-level-bar" style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:4px;font-family:'JetBrains Mono',monospace;font-size:.72rem"></div>
+    </div>
     <div class="game-layout">
       <div class="game-main">
         <div class="narrative-panel" id="narrative-panel"></div>
@@ -228,7 +231,7 @@ const HEROES = [
     ],
     weapons:[
       {id:'gutting_knife',name:'🔪 Nóż do patroszenia',desc:'+1 ATK, +2 ATK vs Szczury/Skaveny',atk:1,bonusAtk:2,bonusVs:['giant_rat','clanrat','stormvermin']},
-      {id:'sling',name:'🏹 Proca z amunicją',desc:'+2 ATK, raz/walkę: 3 DMG przed turą wroga',atk:2,preemptive:3},
+      {id:'sling',name:'🏹 Proca z amunicją',desc:'+2 ATK, raz/walkę: 2 DMG przed turą wroga',atk:2,preemptive:2},
       {id:'torch',name:'🔥 Pochodnia',desc:'+1 ATK, +3 ATK vs nieumarli, oświetla sąsiednie heksy',atk:1,bonusAtk:3,bonusVs:['skeleton','zombie','necromancer'],revealsAdjacent:true}
     ],
     quote:'„Widziałem ich. Są tam na dole. Nikt mi nie wierzy."'
@@ -254,7 +257,7 @@ const HEROES = [
   {
     id:'witch', name:'Elsbeth Nachtflüstern', className:'Wiedźma z Borów', emoji:'✦',
     portrait:'witch',
-    baseStats:{hp:18,atk:4,def:1,lck:5},
+    baseStats:{hp:22,atk:4,def:1,lck:5},
     classAbility:{name:'Dotyk Chaosu',desc:'10 obrażeń, ale 25% szans na 5 obrażeń zwrotnych.',icon:'🌀',chaosDmg:10,backlashChance:0.25,backlashDmg:5},
     spell:{id:'shadow_bolt',name:'🌑 Pocisk Cienia',desc:'Mroczna energia: 8 obrażeń + 20% szans na strach (wróg traci turę). Odnawia się co 2 tury.',icon:'🌑',dmg:8,fearChance:0.2,cooldown:2},
     skills:[
@@ -281,8 +284,8 @@ const ENEMIES = [
 ];
 
 const BOSSES = [
-  {id:'stormvermin',name:'Stormvermin — Elitarny Skaven',emoji:'⚔🐭',portrait:'stormvermin',hp:40,atk:10,def:3,large:true,special:{name:'Wściekły Szarż',every:3,desc:'Co 3 turę: podwójne obrażenia!'}},
-  {id:'necromancer',name:'Nekromanta — Uczeń Śmierci',emoji:'💀✨',portrait:'necromancer',hp:30,atk:8,def:2,large:false,special:{name:'Przywołanie Szkieleta',every:2,desc:'Co 2 turę przywołuje Szkieleta (5 HP, 3 ATK). Max 2.',summon:{name:'Przywołany Szkielet',hp:5,atk:3,def:0}}}
+  {id:'stormvermin',name:'Stormvermin — Elitarny Skaven',emoji:'⚔🐭',portrait:'stormvermin',hp:55,atk:12,def:4,large:true,special:{name:'Wściekły Szarż',every:3,desc:'Co 3 turę: podwójne obrażenia!'}},
+  {id:'necromancer',name:'Nekromanta — Uczeń Śmierci',emoji:'💀✨',portrait:'necromancer',hp:42,atk:10,def:3,large:false,special:{name:'Przywołanie Szkieleta',every:2,desc:'Co 2 turę przywołuje Szkieleta (7 HP, 4 ATK). Max 2.',summon:{name:'Przywołany Szkielet',hp:7,atk:4,def:0}}}
 ];
 
 const ITEMS = {
@@ -311,7 +314,7 @@ const EVENTS = [
   {id:'poison_gas',name:'Trujący gaz',type:'trap',levels:[2,3,4,5],text:'Zielonkawa mgła zaczyna wypełniać korytarz!',dmgRange:[3,6]},
   {id:'sewer_beggar',name:'Kanałowy żebrak',type:'npc',levels:[1,2],text:'„Hej, hej... ciiii..." Z alkowy wychyla się brudna postać.',bonus:{atk:2}},
   {id:'collapsed_passage',name:'Zawalony przejazd',type:'choice',levels:[1,2,3,4],text:'Tunel przed tobą jest na wpół zawalony.',choices:[{label:'💪 Przeciśnij się',desc:'60% OK, 40% = 2-4 DMG',effect:{squeeze:true}},{label:'🔄 Obejście',desc:'Dodatkowa walka',effect:{detour:true}}]},
-  {id:'morr_altar',name:'Ołtarz Morra',type:'rest',levels:[3,4,5],text:'W niszy stoi kamienny ołtarz boga śmierci. Świeczki wciąż się tlą.',healRange:[6,10]},
+  {id:'morr_altar',name:'Ołtarz Morra',type:'rest',levels:[1,2,3,4,5],text:'W niszy stoi kamienny ołtarz boga śmierci. Świeczki wciąż się tlą.',healRange:[6,10]},
   {id:'skaven_patrol',name:'Skavenowy patrol',type:'combat',levels:[2,3,4,5],text:'Szuranie pazurów na kamieniu. Skaven!',enemy:'clanrat'},
   {id:'mystery_mushroom',name:'Tajemniczy grzyb',type:'choice',levels:[1,2,3,4],text:'Na ścianie rośnie duży, fosforyzujący grzyb.',choices:[{label:'🍄 Zjedz',desc:'50%→+8 HP, 50%→-5 HP -1 ATK',effect:{mushroom:true}},{label:'➡ Zostaw',desc:'Nie ryzykuj',effect:{nothing:true}}]},
   {id:'dark_echo',name:'Echo w ciemności',type:'choice',levels:[3,4,5],text:'Z bocznego tunelu dobiega dziwne echo — jakby szepty.',choices:[{label:'🔍 Zbadaj',desc:'Rzut SZC → schowek',effect:{investigate:true}},{label:'➡ Odejdź',desc:'Nie warto',effect:{nothing:true}}]}
@@ -502,7 +505,7 @@ function generateHexMap(level){
     if(cc_===0||(rr<0.30&&cc_<3)){h.type='combat';h.event=pick(levelEvents.filter(e=>e.type==='combat'))||pick(levelEvents);h.enemy=pick(levelEnemies);cc_++}
     else if(ec_===0||(rr<0.60&&ec_<3)){h.type='event';const pool=levelEvents.filter(e=>e.type!=='combat'&&e.type!=='rest');h.event=pick(pool.length?pool:levelEvents);ec_++}
     else if((tc_===0||rr<0.78)&&tc_<2){h.type='treasure';tc_++}
-    else if(rc_<1&&level>=2){h.type='rest';h.event=levelEvents.find(e=>e.type==='rest')||null;rc_++}
+    else if(rc_<1){h.type='rest';h.event=levelEvents.find(e=>e.type==='rest')||null;rc_++}
     else h.type='empty';
   }
 
@@ -685,7 +688,7 @@ function enterRoom(rid){
 function showRoomNarrative(rid){
   const room=GS.map.hexes[rid];
   document.getElementById('narrative-panel').innerHTML=`<div class="event-title">${room.locName} [${rid}]</div><p class="narrative">${pick(ATMOSPHERE_TEXTS)}</p>${getMoveButtons()}`;
-  document.getElementById('enemy-panel-wrap').innerHTML='';document.getElementById('action-panel').innerHTML='';document.getElementById('combat-log').style.display='none';renderHeroPanel();
+  document.getElementById('enemy-panel-wrap').innerHTML='';document.getElementById('action-panel').innerHTML='';document.getElementById('combat-log').style.display='none';document.getElementById('combat-log').innerHTML='';renderHeroPanel();
 }
 function getMoveButtons(){
   if(GS.combat&&!GS.combat.finished) return '';
@@ -738,8 +741,9 @@ function handleNPC(eid){
   document.getElementById('narrative-panel').innerHTML=`<div class="event-title">Rada żebraka</div><p class="narrative">„Celuj w oczy..." <span style="color:var(--green)">+${b} ATK</span></p>${getMoveButtons()}`;renderHeroPanel();
 }
 function handleRest(eid){
-  const ev=EVENTS.find(e=>e.id===eid);const heal=rand(ev.healRange[0],ev.healRange[1]);GS.hero.hp=Math.min(GS.hero.maxHp,GS.hero.hp+heal);
+  const ev=EVENTS.find(e=>e.id===eid);const heal=rand(ev.healRange[0],ev.healRange[1]);
   let ex='';if(GS.hero.hp<GS.hero.maxHp*0.5){GS.hero.lck++;GS.hero.baseLck++;ex=' +1 SZC.'}
+  GS.hero.hp=Math.min(GS.hero.maxHp,GS.hero.hp+heal);
   document.getElementById('narrative-panel').innerHTML=`<div class="event-title">♥ Ołtarz Morra</div><p class="narrative"><span style="color:var(--green)">+${heal} HP</span>.${ex}</p>${getMoveButtons()}`;renderHeroPanel();
 }
 function showTreasureRoom(){
@@ -780,11 +784,11 @@ function renderCombat(){
     const spellData=HEROES.find(h=>h.id===hero.id).spell;
     const spellLabel=canSpell?`${spellData.icon} ${spellData.name}`:`${spellData.icon} (${hero.spellCooldown} tur)`;
     document.getElementById('action-panel').innerHTML=`<div class="action-buttons">
-      <button class="btn" onclick="combatAttack()">⚔ Atakuj</button>
+      <button class="btn" onclick="combatAttack()" title="${'~'+(hero.atk+hero.tempAtk+1-en.def)+'-'+(hero.atk+hero.tempAtk+4-en.def)+' DMG'}">⚔ Atakuj</button>
       <button class="btn" onclick="combatAbility()" ${canAb?'':'disabled'}>${hero.classAbility.icon} ${hero.classAbility.name}${canAb?'':' (użyto)'}</button>
       <button class="btn" style="border-color:var(--blue);color:var(--blue)" onclick="combatSpell()" ${canSpell?'':'disabled'}>${spellLabel}</button>
       <button class="btn" onclick="showItemOverlay()" ${hero.inventory.length?'':'disabled'}>🎒 Przedmiot</button>
-      <button class="btn btn-danger" onclick="combatFlee()">🏃 Uciekaj</button>
+      <button class="btn btn-danger" onclick="confirmFlee()">🏃 Uciekaj</button>
     </div>`;
   } else document.getElementById('action-panel').innerHTML='';
   renderHeroPanel();renderMap();
@@ -799,6 +803,8 @@ function combatAttack(){
   if(hero.weapon.darkEnergy&&rand(1,100)<=hero.weapon.darkEnergy*100){dmg+=5;addLog('🌀 Mroczna energia! +5','log-magic')}
   if(hero.weapon.critChance&&rand(1,100)<=hero.weapon.critChance*100){dmg*=2;addLog('💥 Kryt! ×2','log-luck')}
   if(hero.doubleNextAttack){dmg*=2;hero.doubleNextAttack=false;addLog('☠ Trucizna! ×2','log-magic')}
+  // Attack summons first, then main enemy
+  if(GS.combat.summons.length>0){const s=GS.combat.summons[0];s.hp-=dmg;addLog(`⚔ Zadajesz ${dmg} obrażeń ${s.name}!`,'log-dmg-dealt');if(s.hp<=0){addLog(`💀 ${s.name} zniszczony!`,'log-luck');GS.combat.summons.shift()}renderCombat();if(hero.spellCooldown>0)hero.spellCooldown--;setTimeout(()=>enemyTurn(),600);unlockActions();return}
   en.currentHp-=dmg;addLog(`⚔ Zadajesz ${dmg} obrażeń!`,'log-dmg-dealt');
   document.getElementById('enemy-panel-wrap').classList.add('shake');setTimeout(()=>document.getElementById('enemy-panel-wrap').classList.remove('shake'),300);
   if(en.currentHp<=0){en.currentHp=0;renderCombat();setTimeout(()=>{unlockActions();combatVictory()},500);return}
@@ -834,7 +840,7 @@ function combatSpell(){
 
 function combatFlee(){
   if(isLocked()||!GS.combat||GS.combat.finished)return;lockActions();
-  if(rand(1,100)<=GS.hero.lck*10){addLog('🏃 Uciekasz!','log-luck');GS.combat=null;const room=GS.map.hexes[GS.currentRoom];const prev=room.connections.find(c=>GS.map.hexes[c].visited);if(prev!==undefined)GS.currentRoom=prev;renderMap();unlockActions();showRoomNarrative(GS.currentRoom)}
+  if(rand(1,100)<=GS.hero.lck*8){addLog('🏃 Uciekasz!','log-luck');GS.map.hexes[GS.currentRoom]._completed=false;GS.combat=null;const room=GS.map.hexes[GS.currentRoom];const prev=room.connections.find(c=>GS.map.hexes[c].visited);if(prev!==undefined)GS.currentRoom=prev;renderMap();unlockActions();showRoomNarrative(GS.currentRoom)}
   else{addLog('🏃 Nie udaje się! Wróg atakuje!','log-dmg-taken');enemyTurn(true)}
 }
 
@@ -853,7 +859,7 @@ function enemyTurn(free=false){
   let eAtk=en.atk+rand(0,3);
   if(en.special&&!en.special.summon&&en.special.every&&GS.combat.turn%en.special.every===0)eAtk*=2;
   let dmg=eAtk-(hero.def+hero.tempDef);dmg=Math.max(0,dmg);
-  if(rand(1,100)<=hero.lck*5){addLog('✨ Unik!','log-luck');dmg=0}
+  if(rand(1,100)<=hero.lck*3){addLog('✨ Unik!','log-luck');dmg=0}
   if(dmg>0&&hero.hasBarrelShield&&rand(1,100)<=20){addLog('🛡 Tarcza blokuje!','log-luck');dmg=0}
   if(dmg>0&&hero._halveDmgActive){dmg=Math.ceil(dmg/2);hero._halveDmgActive=false;addLog(`🛡 Stalowa Wola! DMG→${dmg}`,'log-luck')}
   if(dmg>0){hero.hp-=dmg;addLog(`☠ ${en.name}: ${dmg} DMG!`,'log-dmg-taken');if(hero.skill.id==='riposte'&&rand(1,100)<=25){en.currentHp-=3;addLog('⚔ Ripostowanie! 3 DMG!','log-dmg-dealt')}}
@@ -915,7 +921,7 @@ function startBossFight(){
    ═══════════════════════════════════════ */
 function gameOver(){
   const mp=GS.stats.totalRooms>0?Math.round(GS.stats.roomsVisited/GS.stats.totalRooms*100):0;
-  document.getElementById('end-screen').innerHTML=`<h2 style="color:var(--red)">💀 ŚMIERĆ</h2>${portraitHTML(GS.hero.portrait,120,GS.hero.emoji,'end-portrait')}<p class="narrative" style="margin:16px 0">${GS.hero.name} ginie w tunelach pod Ubersreikiem.</p><div class="end-stats"><div class="stat-line"><span class="label">Poziom</span><span class="value">${GS.level}</span></div><div class="stat-line"><span class="label">Mapa odkryta</span><span class="value">${mp}%</span></div><div class="stat-line"><span class="label">Pokoje</span><span class="value">${GS.stats.roomsVisited}</span></div><div class="stat-line"><span class="label">Wrogów</span><span class="value">${GS.stats.enemiesKilled}</span></div><div class="stat-line"><span class="label">Przedmioty</span><span class="value">${GS.stats.itemsFound}</span></div></div><button class="btn btn-primary" style="margin-top:24px" onclick="restartGame()">🔄 Nowa gra</button>`;
+  document.getElementById('end-screen').innerHTML=`<h2 style="color:var(--red)">💀 ŚMIERĆ</h2>${portraitHTML(GS.hero.portrait,120,GS.hero.emoji,'end-portrait')}<p class="narrative" style="margin:16px 0">${GS.hero.name} ginie w tunelach pod Ubersreikiem.</p><div class="end-stats"><div class="stat-line"><span class="label">Poziom tunelu</span><span class="value">${GS.level}</span></div><div class="stat-line"><span class="label">Poziom postaci</span><span class="value">${GS.heroLevel}</span></div><div class="stat-line"><span class="label">Mapa odkryta</span><span class="value">${mp}%</span></div><div class="stat-line"><span class="label">Pokoje</span><span class="value">${GS.stats.roomsVisited}</span></div><div class="stat-line"><span class="label">Wrogów</span><span class="value">${GS.stats.enemiesKilled}</span></div><div class="stat-line"><span class="label">Przedmioty</span><span class="value">${GS.stats.itemsFound}</span></div></div><button class="btn btn-primary" style="margin-top:24px" onclick="restartGame()">🔄 Nowa gra</button>`;
   showScreen('end-screen');
 }
 function gameWin(){
@@ -930,8 +936,20 @@ function restartGame(){GS=null;selectedHeroIdx=-1;customState={points:{hp:0,atk:
    ═══════════════════════════════════════ */
 function renderHeroPanel(){
   if(!GS)return;const h=GS.hero;
+  // Update header level bar
+  const lb=document.getElementById('hero-level-bar');
+  if(lb){
+    const nextKills=GS.heroLevel<LEVEL_THRESHOLDS.length?LEVEL_THRESHOLDS[GS.heroLevel]:null;
+    const prevKills=LEVEL_THRESHOLDS[GS.heroLevel-1]||0;
+    const curKills=GS.stats.enemiesKilled;
+    const pct=nextKills?Math.min(100,Math.round((curKills-prevKills)/(nextKills-prevKills)*100)):100;
+    lb.innerHTML=`<span style="color:var(--gold)">⬆ Poz. ${GS.heroLevel}</span>`
+      +`<span style="flex:1;max-width:200px;height:8px;background:var(--bg);border:1px solid var(--border);border-radius:4px;overflow:hidden;display:inline-block">`
+      +`<span style="display:block;height:100%;width:${pct}%;background:var(--gold);border-radius:3px;transition:width .3s"></span></span>`
+      +`<span style="color:var(--muted)">${curKills}/${nextKills||'MAX'} zabójstw</span>`;
+  }
   let html=`<div class="hero-panel"><div class="hero-panel-top">${portraitHTML(h.portrait,48,h.emoji)}<div><div class="hero-name">${h.emoji} ${h.name}<span class="hero-level-badge">Poz.${GS.heroLevel}</span></div><div class="hero-class">${h.className} | Zabici: ${GS.stats.enemiesKilled}${GS.heroLevel<LEVEL_THRESHOLDS.length?' (nast. poz: '+(LEVEL_THRESHOLDS[GS.heroLevel]||'max')+')':''}</div></div></div><div class="hp-bar"><div class="hp-bar-fill ${hpColor(h.hp,h.maxHp)}" style="width:${(h.hp/h.maxHp)*100}%"></div><div class="hp-bar-text">HP: ${h.hp}/${h.maxHp}</div></div><div class="hero-stats-bar"><span>ATK: <span class="val">${h.atk+h.tempAtk}</span></span><span>OBR: <span class="val">${h.def+h.tempDef}</span></span><span>SZC: <span class="val">${h.lck}</span></span></div><div class="hero-equip">${h.weapon.name} | ${h.skill.name}</div><div class="inventory-bar">`;
-  for(let i=0;i<5;i++){if(i<h.inventory.length){const it=h.inventory[i];html+=`<div class="inv-slot">${it.icon}<div class="tooltip">${it.name}: ${it.desc}</div></div>`}else html+=`<div class="inv-slot empty">—</div>`}
+  for(let i=0;i<5;i++){if(i<h.inventory.length){const it=h.inventory[i];const canUseOOC=!GS.combat&&(it.effect.heal||it.effect.revealMap);html+=`<div class="inv-slot" ${canUseOOC?'onclick="useItemOutOfCombat('+i+')" style="cursor:pointer;border-color:var(--green)"':''}>${it.icon}<div class="tooltip">${it.name}: ${it.desc}${canUseOOC?' (kliknij aby użyć)':''}</div></div>`}else html+=`<div class="inv-slot empty">—</div>`}
   html+=`</div></div>`;document.getElementById('hero-panel-wrap').innerHTML=html;
 }
 function hpColor(c,m){const p=c/m;if(p>0.5)return'green';if(p>0.25)return'yellow';return'red'}
@@ -982,6 +1000,50 @@ function applyLevelUp(){
   GS.pendingPoints=0;
   document.getElementById('levelup-overlay').classList.remove('active');
   renderHeroPanel();renderCombat();
+}
+
+/* ═══════════════════════════════════════
+   OUT-OF-COMBAT ITEM USE
+   ═══════════════════════════════════════ */
+function useItemOutOfCombat(idx){
+  if(GS.combat) return;
+  const item=GS.hero.inventory[idx];
+  if(!item) return;
+  const eff=item.effect;
+  if(eff.heal){
+    GS.hero.inventory.splice(idx,1);
+    GS.hero.hp=Math.min(GS.hero.maxHp,GS.hero.hp+eff.heal);
+    if(eff.gasImmune) GS.hero.hasGasImmune=true;
+    const np=document.getElementById('narrative-panel');
+    const room=GS.map.hexes[GS.currentRoom];
+    np.innerHTML=`<div class="event-title">${room.locName} [${GS.currentRoom}]</div><p class="narrative">Używasz ${item.icon} ${item.name}. <span style="color:var(--green)">+${eff.heal} HP</span></p>${getMoveButtons()}`;
+    renderHeroPanel();
+  }
+  if(eff.revealMap){
+    GS.hero.inventory.splice(idx,1);
+    GS.map.hexes.forEach(r=>{r.visible=true;r.revealed=true});
+    renderMap();
+    const np=document.getElementById('narrative-panel');
+    const room=GS.map.hexes[GS.currentRoom];
+    np.innerHTML=`<div class="event-title">${room.locName} [${GS.currentRoom}]</div><p class="narrative">Używasz ${item.icon} ${item.name}. Cała mapa ujawniona!</p>${getMoveButtons()}`;
+    renderHeroPanel();
+  }
+}
+
+/* ═══════════════════════════════════════
+   FLEE CONFIRMATION
+   ═══════════════════════════════════════ */
+let _fleeConfirm=false;
+function confirmFlee(){
+  if(isLocked()||!GS.combat||GS.combat.finished) return;
+  if(!_fleeConfirm){
+    _fleeConfirm=true;
+    addLog(`⚠ Na pewno uciekasz? Szansa: ${GS.hero.lck*8}%. Kliknij ponownie.`,'log-info');
+    setTimeout(()=>{_fleeConfirm=false},3000);
+    return;
+  }
+  _fleeConfirm=false;
+  combatFlee();
 }
 
 /* INIT */
